@@ -2,71 +2,12 @@
 #include <string>
 #include <vector>
 #include <iomanip>
+#include <fstream>
+
+#include "person.hpp"
+#include "siswa.hpp"
 
 using namespace std;
-
-class Person
-{
-private:
-  string Name, mm;
-  int ID, dd, yy;
-
-public:
-  void setID(int Id)
-  {
-    this->ID = Id;
-  }
-  void setName(string name)
-  {
-    this->Name = name;
-  }
-  void setMonth(string month)
-  {
-    this->mm = month;
-  }
-  void setDay(int day)
-  {
-    this->dd = day;
-  }
-  void setYear(int year)
-  {
-    this->yy = year;
-  }
-
-  int getID()
-  {
-    return this->ID;
-  }
-  string getName()
-  {
-    return this->Name;
-  }
-  int getDay()
-  {
-    return this->dd;
-  }
-  string getMonth()
-  {
-    return this->mm;
-  }
-  int getYear()
-  {
-    return this->yy;
-  }
-
-  Person(int Id, string name, int day, string month, int year)
-  {
-    ID = Id;
-    Name = name;
-    dd = day;
-    mm = month;
-    yy = year;
-  };
-};
-
-class Student : Person
-{
-};
 
 void clear()
 {
@@ -75,9 +16,11 @@ void clear()
 
 int main()
 {
-  string personName, personMM, repeat;
-  int personDD, personYY, back, menuTerpilih, menuTerpilih2, menuTerpilih3, menuTerpilih4;
-  vector<Person> dataPerson;
+  string personName, personMM, siswaNRP, siswaDepartemen, repeat;
+  int personDD, personYY, siswaYearEntries, siswaSemester, back, menuTerpilih, menuTerpilih2, menuTerpilih3, menuTerpilih4;
+  vector<Student> dataSiswa;
+  float IPS[] = {};
+  float IPK;
   bool benar = true;
   int id = 1000;
 
@@ -85,12 +28,13 @@ kembali:
   while (benar)
   {
     clear();
-    cout << "\n=================\nJumlah data: " << dataPerson.size() << " Orang\n"
+    cout << "Selamat Datang di Sistem Akademik" << endl;
+    cout << "===========================\nJumlah data: " << dataSiswa.size() << " Mahasiswa\n"
          << endl;
 
     cout << "Menu:" << endl;
-    cout << "1. Tambah Data" << endl;
-    cout << "2. Lihat Data" << endl;
+    cout << "1. Tambah Data Mahasiswa" << endl;
+    cout << "2. Lihat Data Mahasiswa" << endl;
     cout << "3. Keluar" << endl;
     cout << "Nomor: ";
     cin >> menuTerpilih;
@@ -101,6 +45,7 @@ kembali:
     {
       clear();
       id++;
+      siswaNRP = "502" + to_string(id);
       cout << "Masukkan Nama:";
       cin.ignore();
       getline(cin, personName);
@@ -113,9 +58,19 @@ kembali:
       clear();
       cout << "Masukkan Tahun Lahir: ";
       cin >> personYY;
+      clear();
+      cout << "Masukkan Departemen:";
+      cin.ignore();
+      getline(cin, siswaDepartemen);
+      clear();
+      cout << "Masukkan Tahun Masuk: ";
+      cin >> siswaYearEntries;
+      clear();
+      cout << "Masukkan Semester: ";
+      cin >> siswaSemester;
 
-      Person inputMasuk = Person(id, personName, personDD, personMM, personYY);
-      dataPerson.push_back(inputMasuk);
+      Student inputMasuk = Student(id, personName, personDD, personMM, personYY, siswaNRP, siswaDepartemen, siswaYearEntries, siswaSemester);
+      dataSiswa.push_back(inputMasuk);
 
       clear();
       cout << "Apakah Ingin Menginput Lagi? (y/n): ";
@@ -135,24 +90,29 @@ kembali:
 
     case 2:
     {
-      if (dataPerson.size() == 0)
+      if (dataSiswa.size() == 0)
       {
         clear();
         cout << "============================\nData Tidak Tersedia" << endl;
-        cout << "Tekan Enter untuk Kembali..." << endl;
+        cout << "\n============================\n";
+        cout
+            << "Tekan Enter untuk Kembali..." << endl;
+        cin.ignore();
+        cin.ignore();
         goto kembali;
       }
       else
       {
         clear();
-        cout << "ID" << setw(25) << "NAMA" << setw(25) << "TANGGAL LAHIR" << endl;
-        for (int i = 0; i < dataPerson.size(); i++)
+        cout << "ID" << setw(25) << "NRP" << setw(25) << "NAMA" << setw(25) << "TANGGAL LAHIR" << setw(25) << "DEPARTEMEN" << setw(25) << setw(25) << "TAHUN MASUK" << setw(25) << "SEMESTER" << endl;
+        for (int i = 0; i < dataSiswa.size(); i++)
         {
-          cout << dataPerson[i].getID() << setw(25) << dataPerson[i].getName() << setw(20) << dataPerson[i].getDay() << " " << dataPerson[i].getMonth() << " " << dataPerson[i].getYear() << endl;
+          cout << dataSiswa[i].getID() << setw(25) << dataSiswa[i].getNRP() << setw(25) << dataSiswa[i].getName() << setw(20) << dataSiswa[i].getDay() << " " << dataSiswa[i].getMonth() << " " << dataSiswa[i].getYear() << setw(25) << dataSiswa[i].getDepartment() << setw(25) << dataSiswa[i].getYearEntry() << setw(25) << dataSiswa[i].getSemester() << endl;
         }
         cout << "\n============================\n"
              << "1. Edit Data\n"
-             << "2. Kembali" << endl;
+             << "2. Cetak Data\n"
+             << "3. Kembali" << endl;
         cout << "Masukkan Angka: ";
         cin >> menuTerpilih2;
 
@@ -166,15 +126,19 @@ kembali:
           cout << "\n";
 
         pilihan:
-          int batas = dataPerson.size() + 1000;
+          int batas = dataSiswa.size() + 1000;
           if (menuTerpilih3 <= batas)
           {
             clear();
-            cout << "ID    : " << dataPerson[1001 - menuTerpilih3].getID() << endl;
-            cout << "Nama : " << dataPerson[1001 - menuTerpilih3].getName() << endl;
-            cout << "Tanggal Lahir : " << dataPerson[1001 - menuTerpilih3].getDay() << endl;
-            cout << "Bulan Lahir : " << dataPerson[1001 - menuTerpilih3].getMonth() << endl;
-            cout << "Tahun Lahir : " << dataPerson[1001 - menuTerpilih3].getYear() << endl;
+            cout << "ID             : " << dataSiswa[1001 - menuTerpilih3].getID() << endl;
+            cout << "NRP            : " << dataSiswa[1001 - menuTerpilih3].getNRP() << endl;
+            cout << "Nama           : " << dataSiswa[1001 - menuTerpilih3].getName() << endl;
+            cout << "Tanggal Lahir  : " << dataSiswa[1001 - menuTerpilih3].getDay() << endl;
+            cout << "Bulan Lahir    : " << dataSiswa[1001 - menuTerpilih3].getMonth() << endl;
+            cout << "Tahun Lahir    : " << dataSiswa[1001 - menuTerpilih3].getYear() << endl;
+            cout << "Departemen     : " << dataSiswa[1001 - menuTerpilih3].getDepartment() << endl;
+            cout << "Tahun Masuk    : " << dataSiswa[1001 - menuTerpilih3].getYearEntry() << endl;
+            cout << "Semester       : " << dataSiswa[1001 - menuTerpilih3].getSemester() << endl;
 
             cout << "=========================";
 
@@ -182,6 +146,11 @@ kembali:
                  << "2. Ubah Tanggal Lahir\n"
                  << "3. Ubah Bulan Lahir\n"
                  << "4. Ubah Tahun Lahir\n"
+                 << "5. Ubah Departemen\n"
+                 << "6. Ubah Tahun Masuk\n"
+                 << "7. Ubah Semester\n"
+                 << "8. Kembali Ke Menu Utama\n"
+                 << "9. Keluar\n"
                  << "Masukkan Pilihan: ";
             cin >> menuTerpilih4;
 
@@ -193,13 +162,17 @@ kembali:
               cout << "Masukkan Nama: ";
               cin.ignore();
               getline(cin, personName);
-              dataPerson[1001 - menuTerpilih3].setName(personName);
+              dataSiswa[1001 - menuTerpilih3].setName(personName);
               clear();
-              cout << "ID   : " << dataPerson[1001 - menuTerpilih3].getID() << endl;
-              cout << "Nama : " << dataPerson[1001 - menuTerpilih3].getName() << endl;
-              cout << "Tanggal Lahir : " << dataPerson[1001 - menuTerpilih3].getDay() << endl;
-              cout << "Bulan Lahir : " << dataPerson[1001 - menuTerpilih3].getMonth() << endl;
-              cout << "Tahun Lahir : " << dataPerson[1001 - menuTerpilih3].getYear() << endl;
+              cout << "ID             : " << dataSiswa[1001 - menuTerpilih3].getID() << endl;
+              cout << "NRP            : " << dataSiswa[1001 - menuTerpilih3].getNRP() << endl;
+              cout << "Nama           : " << dataSiswa[1001 - menuTerpilih3].getName() << endl;
+              cout << "Tanggal Lahir  : " << dataSiswa[1001 - menuTerpilih3].getDay() << endl;
+              cout << "Bulan Lahir    : " << dataSiswa[1001 - menuTerpilih3].getMonth() << endl;
+              cout << "Tahun Lahir    : " << dataSiswa[1001 - menuTerpilih3].getYear() << endl;
+              cout << "Departemen     : " << dataSiswa[1001 - menuTerpilih3].getDepartment() << endl;
+              cout << "Tahun Masuk    : " << dataSiswa[1001 - menuTerpilih3].getYearEntry() << endl;
+              cout << "Semester       : " << dataSiswa[1001 - menuTerpilih3].getSemester() << endl;
 
               cout << "\n=========================\n";
               cout << "Masukkan Angka 1 untuk Kembali Utama" << endl;
@@ -219,13 +192,17 @@ kembali:
               clear();
               cout << "Masukkan Tanggal Lahir: ";
               cin >> personDD;
-              dataPerson[1001 - menuTerpilih3].setDay(personDD);
+              dataSiswa[1001 - menuTerpilih3].setDay(personDD);
               clear();
-              cout << "ID   : " << dataPerson[1001 - menuTerpilih3].getID() << endl;
-              cout << "Nama : " << dataPerson[1001 - menuTerpilih3].getName() << endl;
-              cout << "Tanggal Lahir : " << dataPerson[1001 - menuTerpilih3].getDay() << endl;
-              cout << "Bulan Lahir : " << dataPerson[1001 - menuTerpilih3].getMonth() << endl;
-              cout << "Tahun Lahir : " << dataPerson[1001 - menuTerpilih3].getYear() << endl;
+              cout << "ID             : " << dataSiswa[1001 - menuTerpilih3].getID() << endl;
+              cout << "NRP            : " << dataSiswa[1001 - menuTerpilih3].getNRP() << endl;
+              cout << "Nama           : " << dataSiswa[1001 - menuTerpilih3].getName() << endl;
+              cout << "Tanggal Lahir  : " << dataSiswa[1001 - menuTerpilih3].getDay() << endl;
+              cout << "Bulan Lahir    : " << dataSiswa[1001 - menuTerpilih3].getMonth() << endl;
+              cout << "Tahun Lahir    : " << dataSiswa[1001 - menuTerpilih3].getYear() << endl;
+              cout << "Departemen     : " << dataSiswa[1001 - menuTerpilih3].getDepartment() << endl;
+              cout << "Tahun Masuk    : " << dataSiswa[1001 - menuTerpilih3].getYearEntry() << endl;
+              cout << "Semester       : " << dataSiswa[1001 - menuTerpilih3].getSemester() << endl;
 
               cout << "\n=========================\n";
               cout << "Masukkan Angka 1 untuk Kembali Utama" << endl;
@@ -246,13 +223,17 @@ kembali:
 
               cout << "Masukkan Bulan Lahir: ";
               cin >> personMM;
-              dataPerson[1001 - menuTerpilih3].setMonth(personMM);
+              dataSiswa[1001 - menuTerpilih3].setMonth(personMM);
               clear();
-              cout << "ID   : " << dataPerson[1001 - menuTerpilih3].getID() << endl;
-              cout << "Nama : " << dataPerson[1001 - menuTerpilih3].getName() << endl;
-              cout << "Tanggal Lahir : " << dataPerson[1001 - menuTerpilih3].getDay() << endl;
-              cout << "Bulan Lahir : " << dataPerson[1001 - menuTerpilih3].getMonth() << endl;
-              cout << "Tahun Lahir : " << dataPerson[1001 - menuTerpilih3].getYear() << endl;
+              cout << "ID             : " << dataSiswa[1001 - menuTerpilih3].getID() << endl;
+              cout << "NRP            : " << dataSiswa[1001 - menuTerpilih3].getNRP() << endl;
+              cout << "Nama           : " << dataSiswa[1001 - menuTerpilih3].getName() << endl;
+              cout << "Tanggal Lahir  : " << dataSiswa[1001 - menuTerpilih3].getDay() << endl;
+              cout << "Bulan Lahir    : " << dataSiswa[1001 - menuTerpilih3].getMonth() << endl;
+              cout << "Tahun Lahir    : " << dataSiswa[1001 - menuTerpilih3].getYear() << endl;
+              cout << "Departemen     : " << dataSiswa[1001 - menuTerpilih3].getDepartment() << endl;
+              cout << "Tahun Masuk    : " << dataSiswa[1001 - menuTerpilih3].getYearEntry() << endl;
+              cout << "Semester       : " << dataSiswa[1001 - menuTerpilih3].getSemester() << endl;
 
               cout << "\n=========================\n";
               cout << "Masukkan Angka 1 untuk Kembali Utama" << endl;
@@ -272,13 +253,17 @@ kembali:
               clear();
               cout << "Masukkan Tahun Lahir: ";
               cin >> personYY;
-              dataPerson[1001 - menuTerpilih3].setYear(personYY);
+              dataSiswa[1001 - menuTerpilih3].setYear(personYY);
               clear();
-              cout << "ID   : " << dataPerson[1001 - menuTerpilih3].getID() << endl;
-              cout << "Nama : " << dataPerson[1001 - menuTerpilih3].getName() << endl;
-              cout << "Tanggal Lahir : " << dataPerson[1001 - menuTerpilih3].getDay() << endl;
-              cout << "Bulan Lahir : " << dataPerson[1001 - menuTerpilih3].getMonth() << endl;
-              cout << "Tahun Lahir : " << dataPerson[1001 - menuTerpilih3].getYear() << endl;
+              cout << "ID             : " << dataSiswa[1001 - menuTerpilih3].getID() << endl;
+              cout << "NRP            : " << dataSiswa[1001 - menuTerpilih3].getNRP() << endl;
+              cout << "Nama           : " << dataSiswa[1001 - menuTerpilih3].getName() << endl;
+              cout << "Tanggal Lahir  : " << dataSiswa[1001 - menuTerpilih3].getDay() << endl;
+              cout << "Bulan Lahir    : " << dataSiswa[1001 - menuTerpilih3].getMonth() << endl;
+              cout << "Tahun Lahir    : " << dataSiswa[1001 - menuTerpilih3].getYear() << endl;
+              cout << "Departemen     : " << dataSiswa[1001 - menuTerpilih3].getDepartment() << endl;
+              cout << "Tahun Masuk    : " << dataSiswa[1001 - menuTerpilih3].getYearEntry() << endl;
+              cout << "Semester       : " << dataSiswa[1001 - menuTerpilih3].getSemester() << endl;
 
               cout << "\n=========================\n";
               cout << "Masukkan Angka 1 untuk Kembali Utama" << endl;
@@ -293,7 +278,105 @@ kembali:
                 goto pilihan;
               }
             }
+            case 5:
+            {
+              clear();
+              cout << "Masukkan Departemen: ";
+              cin.ignore();
+              getline(cin, siswaDepartemen);
+              dataSiswa[1001 - menuTerpilih3].setDepartment(siswaDepartemen);
+              clear();
+              cout << "ID             : " << dataSiswa[1001 - menuTerpilih3].getID() << endl;
+              cout << "NRP            : " << dataSiswa[1001 - menuTerpilih3].getNRP() << endl;
+              cout << "Nama           : " << dataSiswa[1001 - menuTerpilih3].getName() << endl;
+              cout << "Tanggal Lahir  : " << dataSiswa[1001 - menuTerpilih3].getDay() << endl;
+              cout << "Bulan Lahir    : " << dataSiswa[1001 - menuTerpilih3].getMonth() << endl;
+              cout << "Tahun Lahir    : " << dataSiswa[1001 - menuTerpilih3].getYear() << endl;
+              cout << "Departemen     : " << dataSiswa[1001 - menuTerpilih3].getDepartment() << endl;
+              cout << "Tahun Masuk    : " << dataSiswa[1001 - menuTerpilih3].getYearEntry() << endl;
+              cout << "Semester       : " << dataSiswa[1001 - menuTerpilih3].getSemester() << endl;
 
+              cout << "\n=========================\n";
+              cout << "Masukkan Angka 1 untuk Kembali Utama" << endl;
+              cout << "Masukkan Angka 2 untuk Kembali Mengubah Data" << endl;
+              cin >> back;
+              if (back == 1)
+              {
+                goto kembali;
+              }
+              else if (back == 2)
+              {
+                goto pilihan;
+              }
+            }
+            case 6:
+            {
+              clear();
+              cout << "Masukkan Tahun Masuk: ";
+              cin >> siswaYearEntries;
+              dataSiswa[1001 - menuTerpilih3].setYearEntry(siswaYearEntries);
+              clear();
+              cout << "ID             : " << dataSiswa[1001 - menuTerpilih3].getID() << endl;
+              cout << "NRP            : " << dataSiswa[1001 - menuTerpilih3].getNRP() << endl;
+              cout << "Nama           : " << dataSiswa[1001 - menuTerpilih3].getName() << endl;
+              cout << "Tanggal Lahir  : " << dataSiswa[1001 - menuTerpilih3].getDay() << endl;
+              cout << "Bulan Lahir    : " << dataSiswa[1001 - menuTerpilih3].getMonth() << endl;
+              cout << "Tahun Lahir    : " << dataSiswa[1001 - menuTerpilih3].getYear() << endl;
+              cout << "Departemen     : " << dataSiswa[1001 - menuTerpilih3].getDepartment() << endl;
+              cout << "Tahun Masuk    : " << dataSiswa[1001 - menuTerpilih3].getYearEntry() << endl;
+              cout << "Semester       : " << dataSiswa[1001 - menuTerpilih3].getSemester() << endl;
+
+              cout << "\n=========================\n";
+              cout << "Masukkan Angka 1 untuk Kembali Utama" << endl;
+              cout << "Masukkan Angka 2 untuk Kembali Mengubah Data" << endl;
+              cin >> back;
+              if (back == 1)
+              {
+                goto kembali;
+              }
+              else if (back == 2)
+              {
+                goto pilihan;
+              }
+            }
+            case 7:
+            {
+              clear();
+              cout << "Masukkan Semester: ";
+              cin >> siswaSemester;
+              dataSiswa[1001 - menuTerpilih3].setSemester(siswaSemester);
+              clear();
+              cout << "ID             : " << dataSiswa[1001 - menuTerpilih3].getID() << endl;
+              cout << "NRP            : " << dataSiswa[1001 - menuTerpilih3].getNRP() << endl;
+              cout << "Nama           : " << dataSiswa[1001 - menuTerpilih3].getName() << endl;
+              cout << "Tanggal Lahir  : " << dataSiswa[1001 - menuTerpilih3].getDay() << endl;
+              cout << "Bulan Lahir    : " << dataSiswa[1001 - menuTerpilih3].getMonth() << endl;
+              cout << "Tahun Lahir    : " << dataSiswa[1001 - menuTerpilih3].getYear() << endl;
+              cout << "Departemen     : " << dataSiswa[1001 - menuTerpilih3].getDepartment() << endl;
+              cout << "Tahun Masuk    : " << dataSiswa[1001 - menuTerpilih3].getYearEntry() << endl;
+              cout << "Semester       : " << dataSiswa[1001 - menuTerpilih3].getSemester() << endl;
+
+              cout << "\n=========================\n";
+              cout << "Masukkan Angka 1 untuk Kembali Utama" << endl;
+              cout << "Masukkan Angka 2 untuk Kembali Mengubah Data" << endl;
+              cin >> back;
+              if (back == 1)
+              {
+                goto kembali;
+              }
+              else if (back == 2)
+              {
+                goto pilihan;
+              }
+            }
+            case 8:
+            {
+              goto kembali;
+            }
+            case 9:
+            {
+              break;
+            }
             default:
               break;
             }
@@ -307,8 +390,26 @@ kembali:
           }
         }
         break;
-
         case 2:
+        {
+          clear();
+          cout << "Maaf layanan belum tersedia" << endl;
+          cout << "\n============================\n";
+          cout << "Tekan enter untuk kembali..." << endl;
+          cin.ignore();
+          cin.ignore();
+          goto kembali;
+          // ofstream fw("D:\\Programming\\C++\\file.csv", ofstream::out);
+          // if (fw.is_open)
+          // {
+          //   for (int i = 0; i < dataSiswa.size(); i++)
+          //   {
+          //     fw << dataSiswa[i] << "\n";
+          //   }
+          //   fw.close();
+          // }
+        }
+        case 3:
         {
           clear();
           goto kembali;

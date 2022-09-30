@@ -1,7 +1,10 @@
 {
   "files.associations": {
     "xstring": "cpp",
-    "istream": "cpp"
+    "istream": "cpp",
+    "ostream": "cpp",
+    "string": "cpp",
+    "iomanip": "cpp"
   },
   "C_Cpp.errorSquiggles": "Enabled"
 }
